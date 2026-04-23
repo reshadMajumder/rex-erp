@@ -1,0 +1,12 @@
+.env
+.env.test
+.env.development
+.env.production
+db.sqlite3
+db.db
+pycache
+__pycache__/
+
+migrations/
+!migrations/__init__.py
+env/

@@ -1,0 +1,2333 @@
+openapi: 3.0.3
+info:
+  title: Praxis ERP API
+  version: 1.0.0
+  description: Internal API for Praxis ERP - Management system for projects, clients,
+    employees, expenses, and todos.
+paths:
+  /api/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: POST /api/auth/register/  — public endpoint to create a new user
+        account.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/clients/:
+    get:
+      operationId: clients_list
+      description: |-
+        Admin-only CRUD for clients.
+        GET /api/clients/min/ returns a lightweight list for dropdowns.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - clients
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedClientList'
+          description: ''
+    post:
+      operationId: clients_create
+      description: |-
+        Admin-only CRUD for clients.
+        GET /api/clients/min/ returns a lightweight list for dropdowns.
+      tags:
+      - clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Client'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Client'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+  /api/clients/{id}/:
+    get:
+      operationId: clients_retrieve
+      description: |-
+        Admin-only CRUD for clients.
+        GET /api/clients/min/ returns a lightweight list for dropdowns.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this client.
+        required: true
+      tags:
+      - clients
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    put:
+      operationId: clients_update
+      description: |-
+        Admin-only CRUD for clients.
+        GET /api/clients/min/ returns a lightweight list for dropdowns.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this client.
+        required: true
+      tags:
+      - clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Client'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Client'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    patch:
+      operationId: clients_partial_update
+      description: |-
+        Admin-only CRUD for clients.
+        GET /api/clients/min/ returns a lightweight list for dropdowns.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this client.
+        required: true
+      tags:
+      - clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClient'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedClient'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClient'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    delete:
+      operationId: clients_destroy
+      description: |-
+        Admin-only CRUD for clients.
+        GET /api/clients/min/ returns a lightweight list for dropdowns.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this client.
+        required: true
+      tags:
+      - clients
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/clients/min/:
+    get:
+      operationId: clients_min_retrieve
+      description: |-
+        Admin-only CRUD for clients.
+        GET /api/clients/min/ returns a lightweight list for dropdowns.
+      tags:
+      - clients
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+  /api/dashboard/activity/:
+    get:
+      operationId: dashboard_activity_retrieve
+      description: GET /api/dashboard/activity/ — recent 12 events for the activity
+        feed.
+      tags:
+      - dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/dashboard/recent_projects/:
+    get:
+      operationId: dashboard_recent_projects_retrieve
+      description: GET /api/dashboard/recent_projects/ — last 5 projects for sidebar.
+      tags:
+      - dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/dashboard/stats/:
+    get:
+      operationId: dashboard_stats_retrieve
+      description: GET /api/dashboard/stats/ — KPI cards for the admin dashboard.
+      tags:
+      - dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/employees/:
+    get:
+      operationId: employees_list
+      description: |-
+        Admin-only CRUD for employees.
+        POST   /api/employees/           — create with login account
+        GET    /api/employees/min/       — dropdown list
+        POST   /api/employees/{id}/reset_password/ — change password
+        DELETE /api/employees/{id}/     — delete employee + user account
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - employees
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEmployeeList'
+          description: ''
+    post:
+      operationId: employees_create
+      description: |-
+        Admin-only CRUD for employees.
+        POST   /api/employees/           — create with login account
+        GET    /api/employees/min/       — dropdown list
+        POST   /api/employees/{id}/reset_password/ — change password
+        DELETE /api/employees/{id}/     — delete employee + user account
+      tags:
+      - employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmployee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateEmployee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateEmployee'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEmployee'
+          description: ''
+  /api/employees/{id}/:
+    get:
+      operationId: employees_retrieve
+      description: |-
+        Admin-only CRUD for employees.
+        POST   /api/employees/           — create with login account
+        GET    /api/employees/min/       — dropdown list
+        POST   /api/employees/{id}/reset_password/ — change password
+        DELETE /api/employees/{id}/     — delete employee + user account
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this employee.
+        required: true
+      tags:
+      - employees
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    put:
+      operationId: employees_update
+      description: |-
+        Admin-only CRUD for employees.
+        POST   /api/employees/           — create with login account
+        GET    /api/employees/min/       — dropdown list
+        POST   /api/employees/{id}/reset_password/ — change password
+        DELETE /api/employees/{id}/     — delete employee + user account
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this employee.
+        required: true
+      tags:
+      - employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Employee'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    patch:
+      operationId: employees_partial_update
+      description: |-
+        Admin-only CRUD for employees.
+        POST   /api/employees/           — create with login account
+        GET    /api/employees/min/       — dropdown list
+        POST   /api/employees/{id}/reset_password/ — change password
+        DELETE /api/employees/{id}/     — delete employee + user account
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this employee.
+        required: true
+      tags:
+      - employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    delete:
+      operationId: employees_destroy
+      description: |-
+        Admin-only CRUD for employees.
+        POST   /api/employees/           — create with login account
+        GET    /api/employees/min/       — dropdown list
+        POST   /api/employees/{id}/reset_password/ — change password
+        DELETE /api/employees/{id}/     — delete employee + user account
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this employee.
+        required: true
+      tags:
+      - employees
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/employees/{id}/reset_password/:
+    post:
+      operationId: employees_reset_password_create
+      description: |-
+        Admin-only CRUD for employees.
+        POST   /api/employees/           — create with login account
+        GET    /api/employees/min/       — dropdown list
+        POST   /api/employees/{id}/reset_password/ — change password
+        DELETE /api/employees/{id}/     — delete employee + user account
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this employee.
+        required: true
+      tags:
+      - employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetPassword'
+          description: ''
+  /api/employees/min/:
+    get:
+      operationId: employees_min_retrieve
+      description: |-
+        Admin-only CRUD for employees.
+        POST   /api/employees/           — create with login account
+        GET    /api/employees/min/       — dropdown list
+        POST   /api/employees/{id}/reset_password/ — change password
+        DELETE /api/employees/{id}/     — delete employee + user account
+      tags:
+      - employees
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+  /api/expenses/:
+    get:
+      operationId: expenses_list
+      description: |-
+        Admin-only CRUD for expenses.
+        GET /api/expenses/ — list all expenses ordered by date desc.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExpenseList'
+          description: ''
+    post:
+      operationId: expenses_create
+      description: |-
+        Admin-only CRUD for expenses.
+        GET /api/expenses/ — list all expenses ordered by date desc.
+      tags:
+      - expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Expense'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+  /api/expenses/{id}/:
+    get:
+      operationId: expenses_retrieve
+      description: |-
+        Admin-only CRUD for expenses.
+        GET /api/expenses/ — list all expenses ordered by date desc.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this expense.
+        required: true
+      tags:
+      - expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    put:
+      operationId: expenses_update
+      description: |-
+        Admin-only CRUD for expenses.
+        GET /api/expenses/ — list all expenses ordered by date desc.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this expense.
+        required: true
+      tags:
+      - expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Expense'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    patch:
+      operationId: expenses_partial_update
+      description: |-
+        Admin-only CRUD for expenses.
+        GET /api/expenses/ — list all expenses ordered by date desc.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this expense.
+        required: true
+      tags:
+      - expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    delete:
+      operationId: expenses_destroy
+      description: |-
+        Admin-only CRUD for expenses.
+        GET /api/expenses/ — list all expenses ordered by date desc.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this expense.
+        required: true
+      tags:
+      - expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/me/:
+    get:
+      operationId: me_retrieve
+      description: GET /api/me/ — lightweight user info + roles (used by frontend
+        auth context).
+      tags:
+      - me
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/me/assignments/:
+    get:
+      operationId: me_assignments_retrieve
+      description: GET /api/me/assignments/ — employee's own project assignments with
+        payment summary.
+      tags:
+      - me
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/me/payments/:
+    get:
+      operationId: me_payments_retrieve
+      description: GET /api/me/payments/ — all payments received by the logged-in
+        employee.
+      tags:
+      - me
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/profile/:
+    get:
+      operationId: profile_retrieve
+      description: GET/PATCH /api/profile/ — current user's profile.
+      tags:
+      - profile
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+    put:
+      operationId: profile_update
+      description: GET/PATCH /api/profile/ — current user's profile.
+      tags:
+      - profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Profile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+    patch:
+      operationId: profile_partial_update
+      description: GET/PATCH /api/profile/ — current user's profile.
+      tags:
+      - profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProfile'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+  /api/projects/:
+    get:
+      operationId: projects_list
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectList'
+          description: ''
+    post:
+      operationId: projects_create
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/projects/{id}/:
+    get:
+      operationId: projects_retrieve
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    put:
+      operationId: projects_update
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    patch:
+      operationId: projects_partial_update
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProject'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProject'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProject'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    delete:
+      operationId: projects_destroy
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/projects/{id}/assignments/:
+    get:
+      operationId: projects_assignments_retrieve
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    post:
+      operationId: projects_assignments_create
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/projects/{id}/assignments/{aid}/:
+    delete:
+      operationId: projects_assignments_destroy
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: aid
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/projects/{id}/client_payments/:
+    get:
+      operationId: projects_client_payments_retrieve
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    post:
+      operationId: projects_client_payments_create
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/projects/{id}/client_payments/{pid}/:
+    delete:
+      operationId: projects_client_payments_destroy
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: pid
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/projects/{id}/employee_payments/:
+    get:
+      operationId: projects_employee_payments_retrieve
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    post:
+      operationId: projects_employee_payments_create
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/projects/{id}/employee_payments/{pid}/:
+    delete:
+      operationId: projects_employee_payments_destroy
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: pid
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/projects/{id}/notes/:
+    get:
+      operationId: projects_notes_retrieve
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    post:
+      operationId: projects_notes_create
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/projects/{id}/notes/{nid}/:
+    delete:
+      operationId: projects_notes_destroy
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: nid
+        schema:
+          type: string
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/projects/min/:
+    get:
+      operationId: projects_min_retrieve
+      description: |-
+        Admin: full CRUD on all projects.
+        Employee: read-only list/detail of projects they are assigned to.
+        GET /api/projects/min/  — dropdown list (admin)
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/todos/:
+    get:
+      operationId: todos_list
+      description: |-
+        Admin: full CRUD on all todos.
+        Employee: list/retrieve todos assigned to them or on assigned projects.
+                  update own todo status only.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - todos
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTodoList'
+          description: ''
+    post:
+      operationId: todos_create
+      description: |-
+        Admin: full CRUD on all todos.
+        Employee: list/retrieve todos assigned to them or on assigned projects.
+                  update own todo status only.
+      tags:
+      - todos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Todo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Todo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Todo'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+          description: ''
+  /api/todos/{id}/:
+    get:
+      operationId: todos_retrieve
+      description: |-
+        Admin: full CRUD on all todos.
+        Employee: list/retrieve todos assigned to them or on assigned projects.
+                  update own todo status only.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - todos
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+          description: ''
+    put:
+      operationId: todos_update
+      description: |-
+        Admin: full CRUD on all todos.
+        Employee: list/retrieve todos assigned to them or on assigned projects.
+                  update own todo status only.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - todos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Todo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Todo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Todo'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+          description: ''
+    patch:
+      operationId: todos_partial_update
+      description: |-
+        Admin: full CRUD on all todos.
+        Employee: list/retrieve todos assigned to them or on assigned projects.
+                  update own todo status only.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - todos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTodo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTodo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTodo'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+          description: ''
+    delete:
+      operationId: todos_destroy
+      description: |-
+        Admin: full CRUD on all todos.
+        Employee: list/retrieve todos assigned to them or on assigned projects.
+                  update own todo status only.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - todos
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/token/:
+    post:
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+components:
+  schemas:
+    CategoryEnum:
+      enum:
+      - general
+      - materials
+      - travel
+      - software
+      - equipment
+      - office
+      - marketing
+      - utilities
+      - other
+      type: string
+      description: |-
+        * `general` - General
+        * `materials` - Materials
+        * `travel` - Travel
+        * `software` - Software
+        * `equipment` - Equipment
+        * `office` - Office
+        * `marketing` - Marketing
+        * `utilities` - Utilities
+        * `other` - Other
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        company:
+          type: string
+          nullable: true
+          maxLength: 200
+        address:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - updated_at
+    CreateEmployee:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+          minLength: 6
+        phone:
+          type: string
+          maxLength: 50
+        role:
+          type: string
+          maxLength: 100
+      required:
+      - email
+      - name
+      - password
+    Employee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        role:
+          type: string
+          nullable: true
+          maxLength: 100
+        has_login:
+          type: string
+          readOnly: true
+        user_id:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - has_login
+      - id
+      - name
+      - updated_at
+      - user_id
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        project_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        project_name:
+          type: string
+          readOnly: true
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        description:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        vendor:
+          type: string
+          nullable: true
+          maxLength: 200
+        expense_date:
+          type: string
+          format: date
+        method:
+          type: string
+          nullable: true
+          maxLength: 100
+        reference:
+          type: string
+          nullable: true
+          maxLength: 300
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - description
+      - expense_date
+      - id
+      - project_id
+      - project_name
+      - updated_at
+    PaginatedClientList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+    PaginatedEmployeeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employee'
+    PaginatedExpenseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expense'
+    PaginatedProjectList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+    PaginatedTodoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Todo'
+    PatchedClient:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        company:
+          type: string
+          nullable: true
+          maxLength: 200
+        address:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedEmployee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        role:
+          type: string
+          nullable: true
+          maxLength: 100
+        has_login:
+          type: string
+          readOnly: true
+        user_id:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        project_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        project_name:
+          type: string
+          readOnly: true
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        description:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        vendor:
+          type: string
+          nullable: true
+          maxLength: 200
+        expense_date:
+          type: string
+          format: date
+        method:
+          type: string
+          nullable: true
+          maxLength: 100
+        reference:
+          type: string
+          nullable: true
+          maxLength: 300
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        display_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedProject:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 300
+        description:
+          type: string
+          nullable: true
+        client_id:
+          type: string
+          format: uuid
+          nullable: true
+        client_name:
+          type: string
+          readOnly: true
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ProjectStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedTodo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        project_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        project_name:
+          type: string
+          readOnly: true
+        assignee_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        assignee_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 400
+        details:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/TodoStatusEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PriorityEnum:
+      enum:
+      - low
+      - medium
+      - high
+      - urgent
+      type: string
+      description: |-
+        * `low` - Low
+        * `medium` - Medium
+        * `high` - High
+        * `urgent` - Urgent
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        display_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - id
+      - roles
+      - updated_at
+      - username
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 300
+        description:
+          type: string
+          nullable: true
+        client_id:
+          type: string
+          format: uuid
+          nullable: true
+        client_name:
+          type: string
+          readOnly: true
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ProjectStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - client_name
+      - created_at
+      - id
+      - name
+      - updated_at
+    ProjectStatusEnum:
+      enum:
+      - planning
+      - active
+      - on_hold
+      - completed
+      - cancelled
+      type: string
+      description: |-
+        * `planning` - Planning
+        * `active` - Active
+        * `on_hold` - On Hold
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+    Register:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+          minLength: 6
+        display_name:
+          type: string
+          maxLength: 150
+      required:
+      - email
+      - password
+    ResetPassword:
+      type: object
+      properties:
+        password:
+          type: string
+          writeOnly: true
+          minLength: 6
+      required:
+      - password
+    RoleEnum:
+      enum:
+      - admin
+      - employee
+      type: string
+      description: |-
+        * `admin` - Admin
+        * `employee` - Employee
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        project_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        project_name:
+          type: string
+          readOnly: true
+        assignee_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        assignee_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 400
+        details:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/TodoStatusEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - assignee_id
+      - assignee_name
+      - created_at
+      - id
+      - project_id
+      - project_name
+      - title
+      - updated_at
+    TodoStatusEnum:
+      enum:
+      - open
+      - in_progress
+      - done
+      - cancelled
+      type: string
+      description: |-
+        * `open` - Open
+        * `in_progress` - In Progress
+        * `done` - Done
+        * `cancelled` - Cancelled
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    UserRole:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - role
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: Auth
+  description: Authentication and user registration endpoints
+- name: Profile
+  description: User profile management
+- name: Clients
+  description: Client management
+- name: Employees
+  description: Employee management
+- name: Projects
+  description: Project management
+- name: Expenses
+  description: Expense tracking
+- name: Todos
+  description: Task and todo management
+- name: Dashboard
+  description: Dashboard and analytics
