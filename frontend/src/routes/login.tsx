@@ -16,6 +16,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const { user, isAdmin, loading, login } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -40,7 +41,7 @@ function LoginPage() {
         toast.success("Account created. Please sign in.");
         setMode("signin");
       } else {
-        const data = await api.post<any>("/token/", { username: email, password });
+        const data = await api.post<any>("/token/", { username, password });
         await login(data.access, data.refresh);
         toast.success("Welcome back.");
       }
@@ -84,17 +85,31 @@ function LoginPage() {
                 />
               </div>
             )}
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-            </div>
+            {mode === "signup" ? (
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                />
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  autoComplete="username"
+                />
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>
               <Input
