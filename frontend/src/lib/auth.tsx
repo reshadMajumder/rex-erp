@@ -53,11 +53,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void fetchUser();
+
+    const onAuthChanged = () => {
+      void fetchUser();
+    };
+
+    window.addEventListener("auth:changed", onAuthChanged);
+    window.addEventListener("storage", onAuthChanged);
+
+    return () => {
+      window.removeEventListener("auth:changed", onAuthChanged);
+      window.removeEventListener("storage", onAuthChanged);
+    };
   }, []);
 
   const login = async (access: string, refresh: string) => {
     localStorage.setItem("access_token", access);
     localStorage.setItem("refresh_token", refresh);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth:changed"));
+    }
     await fetchUser();
   };
 
@@ -66,6 +81,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("refresh_token");
     setUser(null);
     setRoles([]);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth:changed"));
+    }
   };
 
   const refreshRoles = async () => {

@@ -1,4 +1,30 @@
 export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const REQUEST_TIMEOUT_MS = 12000;
+
+function notifyAuthChanged() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("auth:changed"));
+  }
+}
+
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: options.signal ?? controller.signal,
+    });
+  } catch (error: any) {
+    if (error?.name === "AbortError") {
+      throw new Error("Request timed out. Please try again.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 function getAuthHeaders() {
   const token = localStorage.getItem("access_token");
@@ -18,7 +44,7 @@ async function refreshAccessToken() {
     throw new Error("No refresh token");
   }
 
-  const res = await fetch(`${API_URL}/token/refresh/`, {
+  const res = await fetchWithTimeout(`${API_URL}/token/refresh/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh }),
@@ -37,22 +63,20 @@ async function refreshAccessToken() {
 function logout() {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
-  if (typeof window !== "undefined") {
-    window.location.href = "/login";
-  }
+  notifyAuthChanged();
 }
 
 async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
   const fullUrl = url.startsWith("http") ? url : `${API_URL}${url}`;
   let headers = { ...getAuthHeaders(), ...options.headers };
 
-  let response = await fetch(fullUrl, { ...options, headers });
+  let response = await fetchWithTimeout(fullUrl, { ...options, headers });
 
   if (response.status === 401 && localStorage.getItem("refresh_token")) {
     try {
       const newToken = await refreshAccessToken();
       headers = { ...headers, Authorization: `Bearer ${newToken}` };
-      response = await fetch(fullUrl, { ...options, headers });
+      response = await fetchWithTimeout(fullUrl, { ...options, headers });
     } catch (err) {
       logout();
     }

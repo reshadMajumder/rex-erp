@@ -116,6 +116,7 @@ function LoginPage() {
               <>
                 No account?{" "}
                 <button
+                  type="button"
                   className="font-medium text-primary hover:underline"
                   onClick={() => setMode("signup")}
                 >
@@ -126,6 +127,7 @@ function LoginPage() {
               <>
                 Have an account?{" "}
                 <button
+                  type="button"
                   className="font-medium text-primary hover:underline"
                   onClick={() => setMode("signin")}
                 >

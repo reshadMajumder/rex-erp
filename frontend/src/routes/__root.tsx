@@ -1,11 +1,9 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-
-import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
@@ -31,17 +29,15 @@ function NotFoundComponent() {
 
 function ErrorComponent({ error }: { error: any }) {
   const msg = error?.message || "An unexpected error occurred";
-  const isAuthError = msg.toLowerCase().includes("unauthorized") || 
-                     msg.toLowerCase().includes("not found") ||
-                     msg.toLowerCase().includes("token");
+  const isAuthError =
+    msg.toLowerCase().includes("unauthorized") || msg.toLowerCase().includes("token");
 
   if (isAuthError) {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     if (typeof window !== "undefined") {
-      window.location.href = "/login";
+      window.dispatchEvent(new Event("auth:changed"));
     }
-    return null;
   }
 
   return (
@@ -64,45 +60,10 @@ function ErrorComponent({ error }: { error: any }) {
 }
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Praxis ERP — Personal Project Management" },
-      {
-        name: "description",
-        content: "A personal ERP to manage projects, employees, clients, and chunked payments.",
-      },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap",
-      },
-    ],
-  }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
-
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
 
 function RootComponent() {
   const [queryClient] = useState(
