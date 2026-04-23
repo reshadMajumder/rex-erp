@@ -13,6 +13,7 @@ class Employee(models.Model):
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
     role = models.CharField(max_length=100, blank=True, null=True)
+    is_owner = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

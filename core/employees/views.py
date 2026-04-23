@@ -54,6 +54,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             email=data['email'],
             phone=data.get('phone') or None,
             role=data.get('role') or None,
+            is_owner=data.get('is_owner', False),
         )
         return Response(EmployeeSerializer(employee).data, status=status.HTTP_201_CREATED)
 

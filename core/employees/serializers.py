@@ -11,7 +11,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = [
-            'id', 'name', 'email', 'phone', 'role',
+            'id', 'name', 'email', 'phone', 'role', 'is_owner',
             'has_login', 'user_id', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'has_login', 'user_id', 'created_at', 'updated_at']
@@ -36,6 +36,7 @@ class CreateEmployeeSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=6, write_only=True)
     phone = serializers.CharField(max_length=50, required=False, allow_blank=True)
     role = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    is_owner = serializers.BooleanField(required=False, default=False)
 
     def validate_email(self, value):
         if User.objects.filter(email__iexact=value).exists():

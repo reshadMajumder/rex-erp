@@ -1,4 +1,4 @@
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 
 from accounts.permissions import IsAdmin
 from accounts.models import UserRole
-from clients.models import Client
 from employees.models import Employee
 from projects.models import Project, ClientPayment, EmployeePayment, ProjectAssignment
 from expenses.models import Expense
@@ -29,9 +28,16 @@ class DashboardStatsView(APIView):
 
         total_budget = projects.aggregate(s=Sum('budget'))['s'] or 0
 
-        received = ClientPayment.objects.aggregate(s=Sum('amount'))['s'] or 0
+        client_paid = ClientPayment.objects.aggregate(s=Sum('amount'))['s'] or 0
         paid_out = EmployeePayment.objects.aggregate(s=Sum('amount'))['s'] or 0
+        owner_paid = EmployeePayment.objects.filter(
+            assignment__employee__is_owner=True
+        ).aggregate(s=Sum('amount'))['s'] or 0
+        employee_paid_for_profit = paid_out - owner_paid
         total_expenses = Expense.objects.aggregate(s=Sum('amount'))['s'] or 0
+        existing_money = -total_expenses
+        current_profit = existing_money + client_paid - employee_paid_for_profit
+        expected_profit = current_profit - employee_paid_for_profit
 
         open_todos = Todo.objects.filter(status__in=['open', 'in_progress']).count()
 
@@ -40,9 +46,14 @@ class DashboardStatsView(APIView):
             'activeCount': active_count,
             'employeeCount': employee_count,
             'totalBudget': float(total_budget),
-            'received': float(received),
+            'received': float(client_paid),
             'paid': float(paid_out),
+            'ownerPaid': float(owner_paid),
+            'employeePaidForProfit': float(employee_paid_for_profit),
             'totalExpenses': float(total_expenses),
+            'existingMoney': float(existing_money),
+            'currentProfit': float(current_profit),
+            'expectedProfit': float(expected_profit),
             'openTodos': open_todos,
         })
 
